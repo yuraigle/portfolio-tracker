@@ -110,11 +110,11 @@
             if (currency === 'USD') {
                 document.querySelectorAll('.sum_rub').forEach(e => e.style.display = 'none')
                 document.querySelectorAll('.sum_usd').forEach(e => e.style.display = 'block')
-                document.querySelectorAll('td.editable').forEach(e => e.title = e.dataset.sumusd)
+                document.querySelectorAll('td.editable').forEach(e => e.title = e.dataset.sumusd || '')
             } else if (currency === 'RUB') {
                 document.querySelectorAll('.sum_usd').forEach(e => e.style.display = 'none')
                 document.querySelectorAll('.sum_rub').forEach(e => e.style.display = 'block')
-                document.querySelectorAll('td.editable').forEach(e => e.title = e.dataset.sumrub)
+                document.querySelectorAll('td.editable').forEach(e => e.title = e.dataset.sumrub || '')
             }
         }
 

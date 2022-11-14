@@ -37,7 +37,12 @@
 
                         @foreach ($portfolios as $p)
                             <td onclick="show_add_modal({{ $p->ID }}, {{ $a->ID }}, {{ $mine[$a->ID][$p->ID] ?? 0 }})"
-                                class="editable">
+                                class="editable"
+                                @if(isset($sumC[$a->ID][$p->ID]))
+                                    data-sumusd="${{ number_format($sumC[$a->ID][$p->ID]) }}"
+                                    data-sumrub="&#x20bd;{{ number_format($sumC[$a->ID][$p->ID] * $usdRub) }}"
+                                @endif
+                            >
                                 @if(isset($mine[$a->ID][$p->ID]) && $mine[$a->ID][$p->ID] > 0)
                                     @if($a->TYPE_ID == 3)
                                         {{ number_format($mine[$a->ID][$p->ID], $a->PRICE > 1000 ? 4 : ($a->PRICE > 1 ? 2 : 0)) }}
@@ -105,11 +110,15 @@
             if (currency === 'USD') {
                 document.querySelectorAll('.sum_rub').forEach(e => e.style.display = 'none')
                 document.querySelectorAll('.sum_usd').forEach(e => e.style.display = 'block')
+                document.querySelectorAll('td.editable').forEach(e => e.title = e.dataset.sumusd)
             } else if (currency === 'RUB') {
                 document.querySelectorAll('.sum_usd').forEach(e => e.style.display = 'none')
                 document.querySelectorAll('.sum_rub').forEach(e => e.style.display = 'block')
+                document.querySelectorAll('td.editable').forEach(e => e.title = e.dataset.sumrub)
             }
         }
+
+        set_currency('USD');
 
         function show_add_modal(portfolio_id, asset_id, asset_amount = 0) {
             document.getElementById('portfolio_id').value = portfolio_id;

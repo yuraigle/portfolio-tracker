@@ -22,11 +22,11 @@ class AppController extends BaseController
             $request->session()->forget("form_errors");
         }
 
-        $lastUpd = DB::selectOne("SELECT date_add(min(updated_at), INTERVAL 6 HOUR) AS A FROM `assets` WHERE is_active = 1")->A;
+        $lastUpd = DB::selectOne("SELECT date_add(min(updated_at), INTERVAL 7 HOUR) AS A FROM `assets` WHERE is_active = 1")->A;
         $usdRub = DB::selectOne("SELECT price AS A FROM `assets` WHERE ticker = 'USD' AND currency = 'RUB'")->A;
         $portfolios = DB::select("SELECT ID, `NAME` FROM `portfolios` ORDER BY ID");
 
-        $mine = $sumT = $sumP = $sumA = [];
+        $mine = $sumC = $sumT = $sumP = $sumA = [];
 
         $assets = DB::select("
 SELECT a.ID, a.TICKER, a.PRICE, a.CURRENCY, t.ID AS TYPE_ID, t.`NAME` AS `TYPE`,
@@ -51,13 +51,14 @@ ORDER BY a.TYPE, a.ID
 
         foreach ($res1 as $m) {
             $mine[$m->ASSET_ID][$m->PORTFOLIO_ID] = $m->AMOUNT;
+            $sumC[$m->ASSET_ID][$m->PORTFOLIO_ID] = $m->TTL_USD;
             $sumT[$m->TYPE_NAME] = round(($sumT[$m->TYPE_NAME] ?? 0) + $m->TTL_USD, 2);
             $sumA[$m->ASSET_ID] = round(($sumA[$m->ASSET_ID] ?? 0) + $m->TTL_USD, 2);
             $sumP[$m->PORTFOLIO_ID] = round(($sumP[$m->PORTFOLIO_ID] ?? 0) + $m->TTL_USD, 2);
         }
 
         return view("home", compact("portfolios", "assets", "mine", "sumA", "sumP", "sumT",
-            "usdRub", "lastUpd", "errors"));
+            "sumC", "usdRub", "lastUpd", "errors"));
     }
 
     function edit(Request $request): RedirectResponse
